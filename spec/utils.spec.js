@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const { timeStamp } = require('../db/utils/');
+const { timeStamp, articleRef } = require('../db/utils/');
 const { articleData } = require('../db/data/index');
 
 const data = [
@@ -21,6 +21,27 @@ const data = [
   },
 ];
 
+const data2 = [
+  {
+    title: 'Running a Node App',
+    topic: 'coding',
+    author: 'jessjelly',
+    body:
+      'This is part two of a series on how to get up and running with Systemd and Node.js. This part dives deeper into how to successfully run your app with systemd long-term, and how to set it up in a production environment.',
+    created_at: 1471522072389,
+    article_id: 1,
+  },
+  {
+    title: "The Rise Of Thinking Machines: How IBM's Watson Takes On The World",
+    topic: 'coding',
+    author: 'jessjelly',
+    body:
+      'Many people know Watson as the IBM-developed cognitive super computer that won the Jeopardy! gameshow in 2011. In truth, Watson is not actually a computer but a set of algorithms and APIs, and since winning TV fame (and a $1 million prize) IBM has put it to use tackling tough problems in every industry from healthcare to finance. Most recently, IBM has announced several new partnerships which aim to take things even further, and put its cognitive capabilities to use solving a whole new range of problems around the world.',
+    created_at: 1500584273256,
+    article_id: 3,
+  },
+];
+
 describe('timeStamp', () => {
   it('Should be able to recieve an array with a single element (object) and return the array with the timeStamp formatted', () => {
     const actual = timeStamp([data[0]]);
@@ -36,6 +57,13 @@ describe('timeStamp', () => {
   it('Should be able to recieve an array with a multiple elements (object) and return the array with the timeStamp formatted', () => {
     const actual = timeStamp(articleData);
     const expected = Date(data[0].created_at);
-    console.log(actual);
+    // console.log(actual);
+  });
+});
+
+describe('articleRef', () => {
+  it('Should be able to create a reference Object ', () => {
+    const actual = articleRef(data2);
+    // console.log(actual);
   });
 });
