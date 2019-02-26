@@ -1,5 +1,4 @@
 exports.up = function (knex, Promise) {
-  console.log('creating Comments table...');
   return knex.schema.createTable('comments', (commentsTable) => {
     commentsTable.increments('comment_id');
     commentsTable.string('author');
@@ -20,6 +19,5 @@ exports.up = function (knex, Promise) {
 };
 
 exports.down = function (knex, Promise) {
-  console.log('dropping Comments table...');
   return knex.schema.dropTable('comments');
 };

@@ -7,7 +7,9 @@ exports.getAllTopics = (req, res, next) => {
 };
 
 exports.postTopic = (req, res, next) => {
-  addNewTopic(req.body).then((newTopic) => {
-    res.status(201).json({ Added: newTopic });
-  });
+  addNewTopic(req.body)
+    .then((topic) => {
+      res.status(201).json({ topic });
+    })
+    .catch(next);
 };

@@ -4,4 +4,5 @@ exports.fetchAllTopics = () => connection('topics').select();
 
 exports.addNewTopic = newTopic => connection('topics')
   .insert(newTopic)
-  .returning('*');
+  .returning('*')
+  .then(([topic]) => topic);
