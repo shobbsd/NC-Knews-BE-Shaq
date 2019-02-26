@@ -11,12 +11,14 @@ exports.up = function (knex, Promise) {
     articlesTable
       .foreign('topic')
       .references('slug')
-      .inTable('topics');
+      .inTable('topics')
+      .onDelete('CASCADE');
 
     articlesTable
       .foreign('author')
       .references('username')
-      .inTable('users');
+      .inTable('users')
+      .onDelete('CASCADE');
   });
 };
 

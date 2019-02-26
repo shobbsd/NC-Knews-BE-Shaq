@@ -28,6 +28,15 @@ exports.updateArticle = ({ article_id, votes }) => connection('articles')
   .increment('votes', votes)
   .returning('*');
 
-exports.removeArticle = () => {
-  console.log('here');
-};
+exports.removeArticle = ({ article_id }) => connection('articles')
+  .where({ 'articles.article_id': article_id })
+  .del();
+
+exports.fetchCommentsByArticleId = ({ article_id, column, sort }) => connection('comments')
+  .select('*')
+  .where({ article_id })
+  .orderBy(column, sort);
+
+exports.addCommentByArticleId = insert => connection('comments')
+  .insert(insert)
+  .returning('*');

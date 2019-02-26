@@ -4,17 +4,19 @@ exports.up = function (knex, Promise) {
     commentsTable.string('author');
     commentsTable.integer('article_id');
     commentsTable.integer('votes').defaultTo(0);
-    commentsTable.date('created_at');
+    commentsTable.timestamp('created_at').defaultTo(knex.fn.now());
     commentsTable.string('body', 500);
 
     commentsTable
       .foreign('author')
       .references('username')
-      .inTable('users');
+      .inTable('users')
+      .onDelete('CASCADE');
     commentsTable
       .foreign('article_id')
       .references('article_id')
-      .inTable('articles');
+      .inTable('articles')
+      .onDelete('CASCADE');
   });
 };
 

@@ -114,6 +114,38 @@ describe.only('/api', () => {
             expect(body.article[0].votes).to.equal(102);
           });
       });
+      it('DELETE:204, should respond a status 204', () => request.delete('/api/articles/1').expect(204));
+      describe('/comments', () => {
+        it('GET:200 should respond with an array of comments associated with that id, order by date as default', () => {
+          request
+            .get('/api/articles/1/comments')
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.comments[0]).to.contain.keys(
+                'comment_id',
+                'votes',
+                'created_at',
+                'author',
+                'body',
+              );
+              const timeIndex0 = new Date(body.comments[0].created_at);
+              const timeIndex1 = new Date(body.comments[1].created_at);
+              expect(timeIndex0).to.be.greaterThan(timeIndex1);
+            });
+        });
+        it('POST:201 should respond with the posted comment', () => {
+          request
+            .post('/api/articles/1/comments')
+            .send({
+              username: 'rogersop',
+              body: 'I am a body',
+            })
+            .expect(201)
+            .then(({ body }) => {
+              expect(body.comment[0].comment_id).to.equal(19);
+            });
+        });
+      });
     });
   });
 });
