@@ -1,6 +1,6 @@
 \c nc_news
 
-INSERT INTO articles 
-(title, topic, author, body, created_at)
-VALUES
-('Running a Node App', 'coding','jessjelly', 'This is part two of a', '4/16/2018, 8:29:32 PM')
+ SELECT articles.*, COUNT(comment_id) AS comment_count FROM articles
+--  WHERE articles.author = '*'
+ INNER JOIN comments ON articles.article_id = comments.article_id
+ GROUP BY articles.article_id

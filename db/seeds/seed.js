@@ -11,7 +11,7 @@ exports.seed = function (knex, Promise) {
     .then(() => knex('users')
       .insert(userData)
       .returning('*'))
-    .then(users => knex('articles')
+    .then(() => knex('articles')
       .insert(timeStamp(articleData))
       .returning('*'))
     .then((articles) => {

@@ -6,7 +6,7 @@ exports.up = function (knex, Promise) {
     articlesTable.integer('votes').defaultTo(0);
     articlesTable.string('topic');
     articlesTable.string('author');
-    articlesTable.date('created_at');
+    articlesTable.timestamp('created_at').defaultTo(knex.fn.now());
 
     articlesTable
       .foreign('topic')
