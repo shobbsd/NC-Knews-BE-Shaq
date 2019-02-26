@@ -94,13 +94,25 @@ describe.only('/api', () => {
       })
       .expect(201)
       .then(({ body }) => {
-        expect(body.topic[0].article_id).to.equal(13);
+        expect(body.article[0].article_id).to.equal(13);
       }));
     describe('/:article_id', () => {
       it('GET:200 should return an object with the requested article', () => {
-        request.get('/api/articles/1').then(({ body }) => {
-          console.log(body);
-        });
+        request
+          .get('/api/articles/1')
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.article[0].article_id).to.equal(1);
+          });
+      });
+      it('PATCH:201 should return an object with the requested article', () => {
+        request
+          .patch('/api/articles/1')
+          .send({ inc_votes: 2 })
+          .expect(201)
+          .then(({ body }) => {
+            expect(body.article[0].votes).to.equal(102);
+          });
       });
     });
   });
