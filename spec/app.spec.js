@@ -166,11 +166,17 @@ describe('/api', () => {
         .then(({ body }) => {
           expect(body.article.article_id).to.equal(1);
         }));
-      it('GET:400 should return an object with the requested article', () => request
+      it('GET:400 should return a msg explaining the article must be an id', () => request
         .get('/api/articles/dog')
         .expect(400)
         .then(({ body }) => {
           expect(body).to.eql({ msg: 'article_id must be a number' });
+        }));
+      it('GET:404 should return an msg explaining that id does not exist', () => request
+        .get('/api/articles/999')
+        .expect(404)
+        .then(({ body }) => {
+          expect(body).to.eql({ msg: 'The article_id (999) does not exist' });
         }));
       it('PATCH:201 should return an object with the requested article', () => request
         .patch('/api/articles/1')
@@ -179,7 +185,35 @@ describe('/api', () => {
         .then(({ body }) => {
           expect(body.article.votes).to.equal(102);
         }));
+      it('PATCH:400 should inform the user that info is missing from the body', () => request
+        .patch('/api/articles/1')
+        .send({})
+        .expect(400)
+        .then(({ body }) => {
+          expect(body).to.eql({
+            msg: 'Either there are no votes, or the change in votes is not a number',
+          });
+        }));
+      it('PATCH:400 should inform the user that info is missing from the body', () => request
+        .patch('/api/articles/1')
+        .send({ inc_votes: 2, name: 'Hobbsy' })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body).to.eql({ msg: 'There are too many items in the body' });
+        }));
       it('DELETE:204, should respond a status 204', () => request.delete('/api/articles/1').expect(204));
+      it('DELETE:400, should inform the user the id is incorrect (incorrect format)', () => request
+        .delete('/api/articles/fish')
+        .expect(400)
+        .then(({ body }) => {
+          expect(body).to.eql({ msg: 'The article_id must be a number' });
+        }));
+      it('DELETE:404, should inform the user the id is incorrect (correct format)', () => request
+        .delete('/api/articles/94875')
+        .expect(404)
+        .then(({ body }) => {
+          expect(body).to.eql({ msg: 'This id doesnt exist' });
+        }));
       describe('/comments', () => {
         it('GET:200 should respond with an array of comments associated with that id, order by date as default', () => request
           .get('/api/articles/1/comments')
@@ -195,6 +229,12 @@ describe('/api', () => {
             const timeIndex0 = new Date(body.comments[0].created_at);
             const timeIndex1 = new Date(body.comments[1].created_at);
             expect(timeIndex0).to.be.greaterThan(timeIndex1);
+          }));
+        it('GET:404 Should inform the user there are no comments for this article', () => request
+          .get('/api/articles/12/comments')
+          .expect(404)
+          .then(({ body }) => {
+            expect(body).to.eql({ msg: 'there are no messages associated with this article' });
           }));
         it('POST:201 should respond with the posted comment', () => request
           .post('/api/articles/1/comments')

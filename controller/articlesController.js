@@ -48,7 +48,10 @@ exports.getArticleById = (req, res, next) => {
   const { article_id } = req.params;
   if (!Number.isNaN(+article_id)) {
     fetchArticleById({ article_id })
-      .then(([article]) => res.status(200).json({ article }))
+      .then(([article]) => {
+        if (article === undefined) next({ status: 404, msg: `The article_id (${article_id}) does not exist` });
+        res.status(200).json({ article });
+      })
       .catch(next);
   } else {
     next({ status: 400, msg: 'article_id must be a number' });
@@ -58,16 +61,33 @@ exports.getArticleById = (req, res, next) => {
 exports.patchArticle = (req, res, next) => {
   const { article_id } = req.params;
   const votes = req.body.inc_votes;
-  updateArticle({ article_id, votes }).then(([article]) => {
-    res.status(200).json({ article });
-  });
+  if (typeof votes !== 'number') {
+    next({ status: 400, msg: 'Either there are no votes, or the change in votes is not a number' });
+  } else if (Object.keys(req.body).includes('inc_votes') && Object.keys(req.body).length < 2) {
+    updateArticle({ article_id, votes })
+      .then(([article]) => {
+        res.status(200).json({ article });
+      })
+      .catch(next);
+  } else {
+    next({ status: 400, msg: 'There are too many items in the body' });
+  }
 };
 
 exports.deleteArticle = (req, res, next) => {
   const { article_id } = req.params;
-  removeArticle({ article_id }).then((response) => {
-    res.sendStatus(204);
-  });
+  if (!Number.isNaN(+article_id)) {
+    removeArticle({ article_id })
+      .then((response) => {
+        if (response < 1) {
+          next({ status: 404, msg: 'This id doesnt exist' });
+        }
+        res.sendStatus(204);
+      })
+      .catch(next);
+  } else {
+    next({ status: 400, msg: 'The article_id must be a number' });
+  }
 };
 
 exports.getCommentsByArticleId = (req, res, next) => {
@@ -76,15 +96,21 @@ exports.getCommentsByArticleId = (req, res, next) => {
   let sort = 'desc';
   if (req.query.sort_by) column = req.query.sort_by;
   if (req.query.order) sort = req.query.order;
-  fetchCommentsByArticleId({ article_id, column, sort }).then((comments) => {
-    res.status(200).json({ comments });
-  });
+  fetchCommentsByArticleId({ article_id, column, sort })
+    .then((comments) => {
+      if (comments.length < 1) {
+        next({ status: 404, msg: 'there are no messages associated with this article' });
+      } else res.status(200).json({ comments });
+    })
+    .catch(next);
 };
 
 exports.postCommentByArticleId = (req, res, next) => {
   const { article_id } = req.params;
   const { username: author, body } = req.body;
-  addCommentByArticleId({ article_id, author, body }).then(([comment]) => {
-    res.status(201).json({ comment });
-  });
+  addCommentByArticleId({ article_id, author, body })
+    .then(([comment]) => {
+      res.status(201).json({ comment });
+    })
+    .catch(next);
 };
