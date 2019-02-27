@@ -5,4 +5,4 @@ exports.fetchAllTopics = () => connection('topics').select();
 exports.addNewTopic = newTopic => connection('topics')
   .insert(newTopic)
   .returning('*')
-  .then(([topic]) => topic);
+  .then(topic => topic);

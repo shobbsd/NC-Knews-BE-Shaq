@@ -3,8 +3,8 @@ const { updateCommentById, removeCommentById } = require('../models/commentsMode
 exports.patchCommentById = (req, res, next) => {
   const { comment_id } = req.params;
   const votes = req.body.inc_votes;
-  updateCommentById({ comment_id, votes }).then((comment) => {
-    res.status(201).json({ comment });
+  updateCommentById({ comment_id, votes }).then(([comment]) => {
+    res.status(200).json({ comment });
   });
 };
 

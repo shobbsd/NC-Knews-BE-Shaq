@@ -12,8 +12,35 @@ app.use('/*', (req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
-  if (+err.code === 42703) res.status(400).json({ msg: 'incorrect data within the body', err });
-  else next(err);
+  if (err.status) {
+    res.status(err.status).json({ msg: err.msg });
+  } else next(err);
+});
+
+app.use((err, req, res, next) => {
+  if (err.code === '42703') {
+    res.status(400).json({ msg: 'No matching columns' });
+  } else next(err);
+});
+
+app.use((err, req, res, next) => {
+  if (err.code === '23502') {
+    res.status(400).json({ msg: 'There is data missing in the body for this post' });
+  } else next(err);
+});
+
+app.use((err, req, res, next) => {
+  if (err.code === '23503') {
+    res.status(400).json({ msg: 'Either the topic or the username does not exist' });
+  } else next(err);
+});
+
+app.use((err, req, res, next) => {
+  if (err.code === '23505') {
+    // console.log(err); The console.log would log the error
+    const msg = err.detail;
+    res.status(422).json({ msg });
+  }
 });
 
 app.use((err, req, res, next) => {

@@ -1,11 +1,11 @@
 exports.up = function (knex, Promise) {
   return knex.schema.createTable('articles', (articlesTable) => {
     articlesTable.increments('article_id');
-    articlesTable.string('title');
-    articlesTable.text('body', 500);
+    articlesTable.string('title').notNullable();
+    articlesTable.text('body', 500).notNullable();
     articlesTable.integer('votes').defaultTo(0);
-    articlesTable.string('topic');
-    articlesTable.string('author');
+    articlesTable.string('topic').notNullable();
+    articlesTable.string('author').notNullable();
     articlesTable.timestamp('created_at').defaultTo(knex.fn.now());
 
     articlesTable

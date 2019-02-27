@@ -5,3 +5,7 @@ exports.addNewUser = insert => connection('users')
   .returning('*');
 
 exports.fetchUsers = () => connection('users').select('*');
+
+exports.fetchUserById = username => connection('users')
+  .select('*')
+  .where(username);

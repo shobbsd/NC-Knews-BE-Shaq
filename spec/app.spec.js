@@ -10,9 +10,15 @@ const request = supertest(app);
 
 request.get('/api/topics');
 
-describe.only('/api', () => {
+describe('/api', () => {
   beforeEach(() => connection.seed.run());
   after(() => connection.destroy());
+  it('/bad-url', () => request
+    .get('/bad-url')
+    .expect(404)
+    .then(({ body }) => {
+      expect(body).to.eql({ msg: 'Looks like you have put in an incorrect address' });
+    }));
   describe('/topics', () => {
     it('GET:200, should respond with an array containing all the topics ', () => request
       .get('/api/topics')
@@ -39,7 +45,24 @@ describe.only('/api', () => {
       })
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).to.equal('incorrect data within the body');
+        expect(body).to.eql({ msg: 'No matching columns' });
+      }));
+    it('POST:422, should respond with an error if a slug that exists is entered', () => request
+      .post('/api/topics')
+      .send({
+        slug: 'mitch',
+        description: 'this is a description',
+      })
+      .expect(422)
+      .then(({ body }) => {
+        expect(body).to.contain.keys('msg');
+      }));
+    it('DELETE:405, should return with a message', () => request
+      .delete('/api/topics')
+      .expect(405)
+      .then(({ body }) => {
+        const method = 'DELETE';
+        expect(body).to.eql({ msg: `The ${method} method is not allowed at this endpoint` });
       }));
   });
   describe('/api/articles', () => {
@@ -84,6 +107,24 @@ describe.only('/api', () => {
         const timeIndex1 = new Date(body.articles[1].created_at);
         expect(timeIndex0).to.be.greaterThan(timeIndex1);
       }));
+    it('GET:400, should return an error, explaining the sort_by column doesnt exist', () => request
+      .get('/api/articles?sort_by=dmkl')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body).to.eql({ msg: 'No matching columns' });
+      }));
+    it('GET:400, should return an error, explaining the order is incorrect', () => request
+      .get('/api/articles?order=dmkl')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body).to.eql({ msg: 'That is not an accepted order, use "asc" or "desc"' });
+      }));
+    it('GET:400, should return an error, explaining the author is incorrect', () => request
+      .get('/api/articles?author=dmkl')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body).to.eql({ msg: 'There are no articles associated with that author/topic' });
+      }));
     it('POST:201, should respond with an array of the articles filtered by a specific topic order by date descending by default', () => request
       .post('/api/articles')
       .send({
@@ -94,97 +135,119 @@ describe.only('/api', () => {
       })
       .expect(201)
       .then(({ body }) => {
-        expect(body.article[0].article_id).to.equal(13);
+        expect(body.article.article_id).to.equal(13);
+      }));
+    it('POST:400, error should explain that there is an error in the body ', () => request
+      .post('/api/articles')
+      .send({
+        title: 'this is a title',
+        body: 'this is a body',
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body).to.eql({ msg: 'There is data missing in the body for this post' });
+      }));
+    it('POST:400, error should explain that there are no authors/topics by that name', () => request
+      .post('/api/articles')
+      .send({
+        title: 'this is a title',
+        body: 'this is a body',
+        topic: 'mitc',
+        username: 'rogersop',
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body).to.eql({ msg: 'Either the topic or the username does not exist' });
       }));
     describe('/:article_id', () => {
-      it('GET:200 should return an object with the requested article', () => {
-        request
-          .get('/api/articles/1')
-          .expect(200)
-          .then(({ body }) => {
-            expect(body.article[0].article_id).to.equal(1);
-          });
-      });
-      it('PATCH:201 should return an object with the requested article', () => {
-        request
-          .patch('/api/articles/1')
-          .send({ inc_votes: 2 })
-          .expect(201)
-          .then(({ body }) => {
-            expect(body.article[0].votes).to.equal(102);
-          });
-      });
+      it('GET:200 should return an object with the requested article', () => request
+        .get('/api/articles/1')
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.article.article_id).to.equal(1);
+        }));
+      it('GET:400 should return an object with the requested article', () => request
+        .get('/api/articles/dog')
+        .expect(400)
+        .then(({ body }) => {
+          expect(body).to.eql({ msg: 'article_id must be a number' });
+        }));
+      it('PATCH:201 should return an object with the requested article', () => request
+        .patch('/api/articles/1')
+        .send({ inc_votes: 2 })
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.article.votes).to.equal(102);
+        }));
       it('DELETE:204, should respond a status 204', () => request.delete('/api/articles/1').expect(204));
       describe('/comments', () => {
-        it('GET:200 should respond with an array of comments associated with that id, order by date as default', () => {
-          request
-            .get('/api/articles/1/comments')
-            .expect(200)
-            .then(({ body }) => {
-              expect(body.comments[0]).to.contain.keys(
-                'comment_id',
-                'votes',
-                'created_at',
-                'author',
-                'body',
-              );
-              const timeIndex0 = new Date(body.comments[0].created_at);
-              const timeIndex1 = new Date(body.comments[1].created_at);
-              expect(timeIndex0).to.be.greaterThan(timeIndex1);
-            });
-        });
-        it('POST:201 should respond with the posted comment', () => {
-          request
-            .post('/api/articles/1/comments')
-            .send({
-              username: 'rogersop',
-              body: 'I am a body',
-            })
-            .expect(201)
-            .then(({ body }) => {
-              expect(body.comment[0].comment_id).to.equal(19);
-            });
-        });
+        it('GET:200 should respond with an array of comments associated with that id, order by date as default', () => request
+          .get('/api/articles/1/comments')
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.comments[0]).to.contain.keys(
+              'comment_id',
+              'votes',
+              'created_at',
+              'author',
+              'body',
+            );
+            const timeIndex0 = new Date(body.comments[0].created_at);
+            const timeIndex1 = new Date(body.comments[1].created_at);
+            expect(timeIndex0).to.be.greaterThan(timeIndex1);
+          }));
+        it('POST:201 should respond with the posted comment', () => request
+          .post('/api/articles/1/comments')
+          .send({
+            username: 'rogersop',
+            body: 'I am a body',
+          })
+          .expect(201)
+          .then(({ body }) => {
+            expect(body.comment.comment_id).to.equal(19);
+          }));
       });
     });
   });
   describe('/api/comments/:comment_id', () => {
-    it('PATCH: 201, should return the updated comment', () => {
-      request
-        .patch('/api/comments/2')
-        .send({
-          inc_votes: 3,
-        })
-        .expect(201)
-        .then(({ body }) => {
-          expect(body.comment[0].votes).to.equal(17);
-          expect(body.comment[0].comment_id).to.equal(2);
-        });
-    });
+    it('PATCH: 201, should return the updated comment', () => request
+      .patch('/api/comments/2')
+      .send({
+        inc_votes: 3,
+      })
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comment.votes).to.equal(17);
+        expect(body.comment.comment_id).to.equal(2);
+      }));
     it('DELETE: 204', () => request.delete('/api/comments/2').expect(204));
   });
   describe('/api/users', () => {
-    it('GET:200, Should return an array of users', () => {
-      request
-        .get('/api/users')
+    it('GET:200, Should return an array of users', () => request
+      .get('/api/users')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.users[0].username).to.equal('butter_bridge');
+      }));
+    it('POST:201, Should return the posted user', () => request
+      .post('/api/users')
+      .send({
+        username: 'billyBob',
+        avatar_url: 'https://www.longstring.com',
+        name: 'bill',
+      })
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.user.username).to.equal('billyBob');
+        expect(body.user.name).to.equal('bill');
+      }));
+    describe('/:username', () => {
+      it('GET:200, should return the corresponding user', () => request
+        .get('/api/users/rogersop')
         .expect(200)
         .then(({ body }) => {
-          expect(body.users[0].username).to.equal('butter_bridge');
-        });
-    });
-    it('POST:201, Should return the posted user', () => {
-      request
-        .post('/api/users')
-        .send({
-          username: 'billyBob',
-          avatar_url: 'https://www.longstring.com',
-          name: 'bill',
-        })
-        .expect(201)
-        .then(({ body }) => {
-          expect(body.user[0].username).to.equal('billyBob');
-          expect(body.user[0].name).to.equal('bill');
-        });
+          expect(body.user.username).to.equal('rogersop');
+        }));
     });
   });
 });
