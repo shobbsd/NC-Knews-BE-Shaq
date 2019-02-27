@@ -148,4 +148,43 @@ describe.only('/api', () => {
       });
     });
   });
+  describe('/api/comments/:comment_id', () => {
+    it('PATCH: 201, should return the updated comment', () => {
+      request
+        .patch('/api/comments/2')
+        .send({
+          inc_votes: 3,
+        })
+        .expect(201)
+        .then(({ body }) => {
+          expect(body.comment[0].votes).to.equal(17);
+          expect(body.comment[0].comment_id).to.equal(2);
+        });
+    });
+    it('DELETE: 204', () => request.delete('/api/comments/2').expect(204));
+  });
+  describe('/api/users', () => {
+    it('GET:200, Should return an array of users', () => {
+      request
+        .get('/api/users')
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.users[0].username).to.equal('butter_bridge');
+        });
+    });
+    it('POST:201, Should return the posted user', () => {
+      request
+        .post('/api/users')
+        .send({
+          username: 'billyBob',
+          avatar_url: 'https://www.longstring.com',
+          name: 'bill',
+        })
+        .expect(201)
+        .then(({ body }) => {
+          expect(body.user[0].username).to.equal('billyBob');
+          expect(body.user[0].name).to.equal('bill');
+        });
+    });
+  });
 });
