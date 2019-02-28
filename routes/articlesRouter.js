@@ -7,7 +7,7 @@ const {
   deleteArticle,
   getCommentsByArticleId,
   postCommentByArticleId,
-} = require('../controller/articlesController');
+} = require('../controllers/articlesController');
 const { handle405 } = require('../errors');
 
 articlesRouter

@@ -6,32 +6,17 @@ const {
   removeArticle,
   fetchCommentsByArticleId,
   addCommentByArticleId,
+  countArticles,
 } = require('../models/articlesModel');
 
+const { queryCreator, checker } = require('./tools');
+
 exports.getAllArticles = (req, res, next) => {
-  const query = {};
-  let column = 'created_at';
-  let sort = 'desc';
-  let limit = 10;
-  let p = 1;
-  if (req.query.author) query['articles.author'] = req.query.author;
-  if (req.query.topic) query.topic = req.query.topic;
-  if (req.query.sort_by) column = req.query.sort_by;
-  if (req.query.limit) ({ limit } = req.query);
-  if (req.query.p) ({ p } = req.query);
-  const offset = limit * (p - 1);
-  if (req.query.order) {
-    if (req.query.order === 'asc' || req.query.order === 'asc') {
-      sort = req.query.order;
-    } else {
-      next({ status: 400, msg: 'That is not an accepted order, use "asc" or "desc"' });
-    }
-  }
-  return Promise.all([
-    fetchAllArticles(query, column, sort, limit, offset),
-    fetchAllArticles(query, column, sort, 'ALL'),
-  ])
-    .then(([articles, count]) => {
+  const query = queryCreator(req, res, next);
+
+  return Promise.all([fetchAllArticles(query), countArticles(query), checker(req, res, next)])
+    .then(([articles, count, topicExists]) => {
+      if (!topicExists) next({ status: 404, msg: `"${req.query.topic}" does not exist as a topic` });
       const total_count = count.length;
       if (articles.length < 1) {
         next({ status: 400, msg: 'There are no articles associated with that author/topic' });
@@ -97,20 +82,9 @@ exports.deleteArticle = (req, res, next) => {
 };
 
 exports.getCommentsByArticleId = (req, res, next) => {
-  const { article_id } = req.params;
-  let column = 'created_at';
-  let sort = 'desc';
-  let limit = 10;
-  let p = 1;
-  if (req.query.sort_by) column = req.query.sort_by;
-  if (req.query.order) sort = req.query.order;
-  if (req.query.limit) ({ limit } = req.query);
-  if (req.query.p) ({ p } = req.query);
-  const offset = limit * (p - 1);
-  if (!Number.isNaN(+article_id)) {
-    fetchCommentsByArticleId({
-      article_id, column, sort, limit, offset,
-    })
+  const query = queryCreator(req, res, next);
+  if (!Number.isNaN(+query.article_id)) {
+    fetchCommentsByArticleId(query)
       .then((comments) => {
         if (comments.length < 1) {
           next({

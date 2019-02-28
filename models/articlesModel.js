@@ -1,6 +1,8 @@
 const connection = require('../db/connection');
 
-exports.fetchAllArticles = (query, column, sort, limit, offset) => connection('articles')
+exports.fetchAllArticles = ({
+  query, column, sort, limit, offset,
+}) => connection('articles')
   .select('articles.*')
   .count('comment_id AS comment_count')
   .leftJoin('comments', 'articles.article_id', 'comments.article_id')
@@ -9,6 +11,13 @@ exports.fetchAllArticles = (query, column, sort, limit, offset) => connection('a
   .orderBy(column, sort)
   .limit(limit)
   .offset(offset);
+
+exports.countArticles = ({ query, column, sort }) => connection('articles')
+  .select('articles.*')
+  .leftJoin('comments', 'articles.article_id', 'comments.article_id')
+  .groupBy('articles.article_id')
+  .where(query)
+  .orderBy(column, sort);
 
 exports.addArticle = insert => connection('articles')
   .insert(insert)

@@ -10,7 +10,7 @@ const request = supertest(app);
 
 request.get('/api/topics');
 
-describe('/api', () => {
+describe.only('/api', () => {
   beforeEach(() => connection.seed.run());
   after(() => connection.destroy());
   it('/bad-url', () => request
@@ -24,8 +24,8 @@ describe('/api', () => {
       .get('/api/topics')
       .expect(200)
       .then(({ body }) => {
-        expect(body.length).to.equal(2);
-        expect(body[0]).to.contain.keys('slug', 'description');
+        expect(body.topics.length).to.equal(2);
+        expect(body.topics[0]).to.contain.keys('slug', 'description');
       }));
     it('POST:201, should respond with the newly created record ', () => request
       .post('/api/topics')
@@ -111,7 +111,6 @@ describe('/api', () => {
       .get('/api/articles')
       .expect(200)
       .then(({ body }) => {
-        // console.log(body);
         expect(body.articles.length).to.equal(10);
       }));
     it('GET:200, should contain an object with the total_count', () => request
@@ -143,6 +142,12 @@ describe('/api', () => {
       .expect(400)
       .then(({ body }) => {
         expect(body).to.eql({ msg: 'There are no articles associated with that author/topic' });
+      }));
+    it('GET:404, should return an error, the topic doesnt exist', () => request
+      .get('/api/articles?topic=dmkl')
+      .expect(404)
+      .then(({ body }) => {
+        expect(body).to.eql({ msg: '"dmkl" does not exist as a topic' });
       }));
     it('POST:201, should respond with an array of the articles filtered by a specific topic order by date descending by default', () => request
       .post('/api/articles')
@@ -426,6 +431,7 @@ describe('/api', () => {
         .get('/api/users/rogersop')
         .expect(200)
         .then(({ body }) => {
+          console.log(body);
           expect(body.user.username).to.equal('rogersop');
         }));
       it('GET:404, should return the corresponding user', () => request

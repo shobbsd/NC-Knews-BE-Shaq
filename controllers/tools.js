@@ -1,0 +1,43 @@
+const connection = require('../db/connection');
+
+exports.queryCreator = (req, res, next) => {
+  const { article_id } = req.params;
+  const query = {};
+  const column = req.query.sort_by || 'created_at';
+  let sort = 'desc';
+  const limit = req.query.limit || 10;
+  const p = req.query.p || 1;
+  const offset = limit * (p - 1);
+  if (req.query.author) query['articles.author'] = req.query.author;
+  if (req.query.topic) query.topic = req.query.topic;
+  if (req.query.order) {
+    if (req.query.order === 'asc' || req.query.order === 'asc') {
+      sort = req.query.order;
+    } else {
+      next({ status: 400, msg: 'That is not an accepted order, use "asc" or "desc"' });
+    }
+  }
+  return {
+    query,
+    column,
+    sort,
+    limit,
+    offset,
+    article_id,
+  };
+};
+
+exports.checker = (req, res, next) => {
+  if (req.query.topic) {
+    return connection('topics')
+      .select('*')
+      .where({ slug: req.query.topic })
+      .then((response) => {
+        if (response.length === 0) {
+          return false;
+        }
+        return true;
+      });
+  }
+  return true;
+};
