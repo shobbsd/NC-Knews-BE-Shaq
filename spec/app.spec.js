@@ -157,7 +157,9 @@ describe('/api', () => {
       })
       .expect(400)
       .then(({ body }) => {
-        expect(body).to.eql({ msg: 'Either the topic or the username does not exist' });
+        expect(body).to.eql({
+          msg: 'Something doesnt exist, either the topic or the username or the article',
+        });
       }));
     describe('/:article_id', () => {
       it('GET:200 should return an object with the requested article', () => request
@@ -234,7 +236,25 @@ describe('/api', () => {
           .get('/api/articles/12/comments')
           .expect(404)
           .then(({ body }) => {
-            expect(body).to.eql({ msg: 'there are no messages associated with this article' });
+            expect(body).to.eql({
+              msg:
+                  'There are no messages associated with this article, or there is no article with this ID',
+            });
+          }));
+        it('GET:400 Should inform the user the id format is incorrect', () => request
+          .get('/api/articles/fish/comments')
+          .expect(400)
+          .then(({ body }) => {
+            expect(body).to.eql({ msg: 'The article_id must be a number' });
+          }));
+        it('GET:404 Should inform the user the id is not one currently in the database', () => request
+          .get('/api/articles/9999/comments')
+          .expect(404)
+          .then(({ body }) => {
+            expect(body).to.eql({
+              msg:
+                  'There are no messages associated with this article, or there is no article with this ID',
+            });
           }));
         it('POST:201 should respond with the posted comment', () => request
           .post('/api/articles/1/comments')
@@ -245,6 +265,52 @@ describe('/api', () => {
           .expect(201)
           .then(({ body }) => {
             expect(body.comment.comment_id).to.equal(19);
+          }));
+        it('POST:400 should inform the user that there are missing elements in the body', () => request
+          .post('/api/articles/1/comments')
+          .send({
+            username: 'rogersop',
+            // body: 'I am a body',
+          })
+          .expect(400)
+          .then(({ body }) => {
+            expect(body).to.eql({ msg: 'There is data missing in the body for this post' });
+          }));
+        it('POST:400 should inform the user that there is an issue with the article_id', () => request
+          .post('/api/articles/fish/comments')
+          .send({
+            username: 'rogersop',
+            body: 'I am a body',
+          })
+          .expect(400)
+          .then(({ body }) => {
+            expect(body).to.eql({
+              msg: 'The article_id must be a number',
+            });
+          }));
+        it('POST:400 should inform the user that there are no users with that username', () => request
+          .post('/api/articles/1/comments')
+          .send({
+            username: 'junior',
+            body: 'I am a body',
+          })
+          .expect(400)
+          .then(({ body }) => {
+            expect(body).to.eql({
+              msg: 'Something doesnt exist, either the topic or the username or the article',
+            });
+          }));
+        it('POST:400 should inform the user that there are no articles with that id', () => request
+          .post('/api/articles/99/comments')
+          .send({
+            username: 'junior',
+            body: 'I am a body',
+          })
+          .expect(400)
+          .then(({ body }) => {
+            expect(body).to.eql({
+              msg: 'Something doesnt exist, either the topic or the username or the article',
+            });
           }));
       });
     });
@@ -259,6 +325,38 @@ describe('/api', () => {
       .then(({ body }) => {
         expect(body.comment.votes).to.equal(17);
         expect(body.comment.comment_id).to.equal(2);
+      }));
+    it('PATCH: 400, should return a message explaining that there is something wrong with the body', () => request
+      .patch('/api/comments/2')
+      .send({
+        // inc_votes: 3,
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body).to.eql({
+          msg: 'Either there are no votes, or the change in votes is not a number',
+        });
+      }));
+    it('PATCH: 400, should return a message explaining that there is something wrong with the body', () => request
+      .patch('/api/comments/2')
+      .send({
+        inc_votes: 3,
+        name: 'awesome',
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body).to.eql({
+          msg: 'There are too many items in the body',
+        });
+      }));
+    it('PATCH: 404, should return a message explaining that the ID doesnt exist', () => request
+      .patch('/api/comments/99')
+      .send({
+        inc_votes: 3,
+      })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body).to.eql({ msg: 'This id doesnt exist' });
       }));
     it('DELETE: 204', () => request.delete('/api/comments/2').expect(204));
   });

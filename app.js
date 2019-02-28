@@ -31,7 +31,9 @@ app.use((err, req, res, next) => {
 
 app.use((err, req, res, next) => {
   if (err.code === '23503') {
-    res.status(400).json({ msg: 'Either the topic or the username does not exist' });
+    res
+      .status(400)
+      .json({ msg: 'Something doesnt exist, either the topic or the username or the article' });
   } else next(err);
 });
 

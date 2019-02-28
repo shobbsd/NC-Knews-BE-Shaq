@@ -81,8 +81,7 @@ exports.deleteArticle = (req, res, next) => {
       .then((response) => {
         if (response < 1) {
           next({ status: 404, msg: 'This id doesnt exist' });
-        }
-        res.sendStatus(204);
+        } else res.sendStatus(204);
       })
       .catch(next);
   } else {
@@ -96,21 +95,33 @@ exports.getCommentsByArticleId = (req, res, next) => {
   let sort = 'desc';
   if (req.query.sort_by) column = req.query.sort_by;
   if (req.query.order) sort = req.query.order;
-  fetchCommentsByArticleId({ article_id, column, sort })
-    .then((comments) => {
-      if (comments.length < 1) {
-        next({ status: 404, msg: 'there are no messages associated with this article' });
-      } else res.status(200).json({ comments });
-    })
-    .catch(next);
+  if (!Number.isNaN(+article_id)) {
+    fetchCommentsByArticleId({ article_id, column, sort })
+      .then((comments) => {
+        if (comments.length < 1) {
+          next({
+            status: 404,
+            msg:
+              'There are no messages associated with this article, or there is no article with this ID',
+          });
+        } else res.status(200).json({ comments });
+      })
+      .catch(next);
+  } else {
+    next({ status: 400, msg: 'The article_id must be a number' });
+  }
 };
 
 exports.postCommentByArticleId = (req, res, next) => {
   const { article_id } = req.params;
   const { username: author, body } = req.body;
-  addCommentByArticleId({ article_id, author, body })
-    .then(([comment]) => {
-      res.status(201).json({ comment });
-    })
-    .catch(next);
+  if (!Number.isNaN(+article_id)) {
+    addCommentByArticleId({ article_id, author, body })
+      .then(([comment]) => {
+        res.status(201).json({ comment });
+      })
+      .catch(next);
+  } else {
+    next({ status: 400, msg: 'The article_id must be a number' });
+  }
 };
