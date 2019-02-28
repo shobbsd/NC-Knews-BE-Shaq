@@ -210,7 +210,7 @@ describe('/api', () => {
         .then(({ body }) => {
           expect(body).to.eql({ msg: 'The article_id must be a number' });
         }));
-      it('DELETE:404, should inform the user the id is incorrect (correct format)', () => request
+      it('DELETE:404, should inform the user the id doesnt exist', () => request
         .delete('/api/articles/94875')
         .expect(404)
         .then(({ body }) => {
@@ -359,6 +359,18 @@ describe('/api', () => {
         expect(body).to.eql({ msg: 'This id doesnt exist' });
       }));
     it('DELETE: 204', () => request.delete('/api/comments/2').expect(204));
+    it('DELETE:404, should inform the user the id doesnt exist', () => request
+      .delete('/api/comments/99')
+      .expect(404)
+      .then(({ body }) => {
+        expect(body).to.eql({ msg: 'This id doesnt exist' });
+      }));
+    it('DELETE:400, should inform the user the id is incorrect (incorrect format)', () => request
+      .delete('/api/comments/doughnut')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body).to.eql({ msg: 'The article_id must be a number' });
+      }));
   });
   describe('/api/users', () => {
     it('GET:200, Should return an array of users', () => request
@@ -379,12 +391,29 @@ describe('/api', () => {
         expect(body.user.username).to.equal('billyBob');
         expect(body.user.name).to.equal('bill');
       }));
+    it('POST:400, Should return a message alerting the user there are element missing from the body', () => request
+      .post('/api/users')
+      .send({
+        username: 'billyBob',
+        avatar_url: 'https://www.longstring.com',
+        // name: 'bill',
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body).to.eql({ msg: 'There is data missing in the body for this post' });
+      }));
     describe('/:username', () => {
       it('GET:200, should return the corresponding user', () => request
         .get('/api/users/rogersop')
         .expect(200)
         .then(({ body }) => {
           expect(body.user.username).to.equal('rogersop');
+        }));
+      it('GET:404, should return the corresponding user', () => request
+        .get('/api/users/rogersp')
+        .expect(404)
+        .then(({ body }) => {
+          expect(body).to.eql({ msg: 'This user does not exist' });
         }));
     });
   });
