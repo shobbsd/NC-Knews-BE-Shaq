@@ -1,16 +1,14 @@
 const connection = require('../db/connection');
 
-// SELECT articles.*, COUNT(comment_id) AS comment_count FROM articles
-// INNER JOIN comments ON articles.article_id = comments.article_id
-// GROUP BY articles.article_id;
-
-exports.fetchAllArticles = (query, column, sort) => connection('articles')
+exports.fetchAllArticles = (query, column, sort, limit, offset) => connection('articles')
   .select('articles.*')
   .count('comment_id AS comment_count')
-  .innerJoin('comments', 'articles.article_id', 'comments.article_id')
+  .leftJoin('comments', 'articles.article_id', 'comments.article_id')
   .groupBy('articles.article_id')
   .where(query)
-  .orderBy(column, sort);
+  .orderBy(column, sort)
+  .limit(limit)
+  .offset(offset);
 
 exports.addArticle = insert => connection('articles')
   .insert(insert)
@@ -32,10 +30,14 @@ exports.removeArticle = ({ article_id }) => connection('articles')
   .where({ 'articles.article_id': article_id })
   .del();
 
-exports.fetchCommentsByArticleId = ({ article_id, column, sort }) => connection('comments')
+exports.fetchCommentsByArticleId = ({
+  article_id, column, sort, limit, offset,
+}) => connection('comments')
   .select('*')
   .where({ article_id })
-  .orderBy(column, sort);
+  .orderBy(column, sort)
+  .limit(limit)
+  .offset(offset);
 
 exports.addCommentByArticleId = insert => connection('comments')
   .insert(insert)

@@ -12,9 +12,14 @@ exports.getAllArticles = (req, res, next) => {
   const query = {};
   let column = 'created_at';
   let sort = 'desc';
+  let limit = 10;
+  let p = 1;
   if (req.query.author) query['articles.author'] = req.query.author;
   if (req.query.topic) query.topic = req.query.topic;
   if (req.query.sort_by) column = req.query.sort_by;
+  if (req.query.limit) ({ limit } = req.query);
+  if (req.query.p) ({ p } = req.query);
+  const offset = limit * (p - 1);
   if (req.query.order) {
     if (req.query.order === 'asc' || req.query.order === 'asc') {
       sort = req.query.order;
@@ -22,15 +27,17 @@ exports.getAllArticles = (req, res, next) => {
       next({ status: 400, msg: 'That is not an accepted order, use "asc" or "desc"' });
     }
   }
-  fetchAllArticles(query, column, sort)
-    .then((articles) => {
+  return Promise.all([
+    fetchAllArticles(query, column, sort, limit, offset),
+    fetchAllArticles(query, column, sort, 'ALL'),
+  ])
+    .then(([articles, count]) => {
+      const total_count = count.length;
       if (articles.length < 1) {
         next({ status: 400, msg: 'There are no articles associated with that author/topic' });
-      } else res.status(200).json({ articles });
+      } else res.status(200).json({ total_count, articles });
     })
-    .catch((err) => {
-      next(err);
-    });
+    .catch(next);
 };
 
 exports.postArticle = (req, res, next) => {
@@ -93,10 +100,17 @@ exports.getCommentsByArticleId = (req, res, next) => {
   const { article_id } = req.params;
   let column = 'created_at';
   let sort = 'desc';
+  let limit = 10;
+  let p = 1;
   if (req.query.sort_by) column = req.query.sort_by;
   if (req.query.order) sort = req.query.order;
+  if (req.query.limit) ({ limit } = req.query);
+  if (req.query.p) ({ p } = req.query);
+  const offset = limit * (p - 1);
   if (!Number.isNaN(+article_id)) {
-    fetchCommentsByArticleId({ article_id, column, sort })
+    fetchCommentsByArticleId({
+      article_id, column, sort, limit, offset,
+    })
       .then((comments) => {
         if (comments.length < 1) {
           next({

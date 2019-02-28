@@ -107,6 +107,25 @@ describe('/api', () => {
         const timeIndex1 = new Date(body.articles[1].created_at);
         expect(timeIndex0).to.be.greaterThan(timeIndex1);
       }));
+    it('GET:200, should respond with an array of the articles limited to 10', () => request
+      .get('/api/articles')
+      .expect(200)
+      .then(({ body }) => {
+        // console.log(body);
+        expect(body.articles.length).to.equal(10);
+      }));
+    it('GET:200, should contain an object with the total_count', () => request
+      .get('/api/articles')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.total_count).to.be.a('number');
+      }));
+    it('GET:200, should respond with an array of the articles limited to 10', () => request
+      .get('/api/articles?p=2')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles[0].article_id).to.equal(11);
+      }));
     it('GET:400, should return an error, explaining the sort_by column doesnt exist', () => request
       .get('/api/articles?sort_by=dmkl')
       .expect(400)
