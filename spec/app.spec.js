@@ -137,11 +137,11 @@ describe('/api', () => {
       .then(({ body }) => {
         expect(body).to.eql({ msg: 'That is not an accepted order, use "asc" or "desc"' });
       }));
-    it('GET:400, should return an error, explaining the author is incorrect', () => request
+    it.only('GET:400, should return an error, explaining the author is incorrect', () => request
       .get('/api/articles?author=dmkl')
-      .expect(400)
+      .expect(404)
       .then(({ body }) => {
-        expect(body).to.eql({ msg: 'There are no articles associated with that author/topic' });
+        expect(body).to.eql({ msg: 'The author dmkl does not exist as a user' });
       }));
     it('GET:404, should return an error, the topic doesnt exist', () => request
       .get('/api/articles?topic=dmkl')
@@ -149,6 +149,20 @@ describe('/api', () => {
       .then(({ body }) => {
         expect(body).to.eql({ msg: '"dmkl" does not exist as a topic' });
       }));
+    it('GET:200, should return an empty array if the topic exists but contains no articles', () => {
+      request
+        .post('/api/topics')
+        .send({
+          slug: 'test',
+          description: 'this is a description',
+        })
+        .then(() => request
+          .get('/api/articles?topic=test')
+          .expect(200)
+          .then(({ body }) => {
+            expect(body).to.eql({ total_count: 0, articles: [] });
+          }));
+    });
     it('POST:201, should respond with an array of the articles filtered by a specific topic order by date descending by default', () => request
       .post('/api/articles')
       .send({

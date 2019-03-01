@@ -191,7 +191,7 @@ describe('createArticleRef', () => {
   });
 });
 
-describe.only('formatComment', () => {
+describe('formatComment', () => {
   it('The function should be able to take in a reference object and an array with a single element, and return an array with the data formatted in the correct way (swappinig "belongs_to" with "article_id" and swapping "created_by" with author" )', () => {
     const actual = formatComment([commentData[0]], ref);
     const expected = [

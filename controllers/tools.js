@@ -34,7 +34,18 @@ exports.checker = (req, res, next) => {
       .where({ slug: req.query.topic })
       .then((response) => {
         if (response.length === 0) {
-          return false;
+          return { msg: `${req.query.topic} does not exist as a topic` };
+        }
+        return true;
+      });
+  }
+  if (req.query.author) {
+    return connection('users')
+      .select('*')
+      .where({ username: req.query.author })
+      .then((response) => {
+        if (response.length === 0) {
+          return { msg: `The author ${req.query.author} does not exist as a user` };
         }
         return true;
       });

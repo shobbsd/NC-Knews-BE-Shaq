@@ -14,13 +14,14 @@ const { queryCreator, checker } = require('./tools');
 exports.getAllArticles = (req, res, next) => {
   const query = queryCreator(req, res, next);
 
-  return Promise.all([fetchAllArticles(query), countArticles(query), checker(req, res, next)])
+  return Promise.all([fetchAllArticles(query), countArticles(query), checker(req)])
     .then(([articles, count, topicExists]) => {
-      if (!topicExists) next({ status: 404, msg: `"${req.query.topic}" does not exist as a topic` });
-      const total_count = count.length;
-      if (articles.length < 1) {
-        next({ status: 400, msg: 'There are no articles associated with that author/topic' });
-      } else res.status(200).json({ total_count, articles });
+      if (topicExists === true) {
+        const total_count = count.length;
+        res.status(200).json({ total_count, articles });
+      } else {
+        next({ status: 404, msg: topicExists.msg });
+      }
     })
     .catch(next);
 };
