@@ -69,7 +69,7 @@ Note: GET request can be ran from a browser using "localhost:9090" before an end
     - Description: Returns an on object containing an array of all topics
     - Response example:
 
-    ```javascript
+    ```js
     {
       "topics": [
         {
@@ -93,7 +93,7 @@ Note: GET request can be ran from a browser using "localhost:9090" before an end
     - Description: Returns the record of the newly posted topic
     - Body Example:
 
-    ```javascript
+    ```js
     {
       "slug": "slug_name_here",
       "description": "description_here"
@@ -102,7 +102,7 @@ Note: GET request can be ran from a browser using "localhost:9090" before an end
 
     - Response Example:
 
-    ```javascript
+    ```js
     {
       "topic": {
         "slug": "slug_name_here",
@@ -118,7 +118,7 @@ Note: GET request can be ran from a browser using "localhost:9090" before an end
     - Description: Returns an on object containing an array of all articles
     - Response Example:
 
-    ```javascript
+    ```js
     {
       "total_count": 12,
       "articles": [
@@ -151,7 +151,7 @@ Note: GET request can be ran from a browser using "localhost:9090" before an end
 
     - Query Rules:
 
-    ```javascript
+    ```js
     {
       "AUTHOR": "FILTER, by the username",
       "TOPIC": "FILTER, by topic",
@@ -176,7 +176,7 @@ Note: GET request can be ran from a browser using "localhost:9090" before an end
     - Description: Returns the record of the newly post article
     - Body Example:
 
-    ```javascript
+    ```js
     {
       "title": "title_here",
       "body": "body_here",
@@ -187,7 +187,7 @@ Note: GET request can be ran from a browser using "localhost:9090" before an end
 
     - Response Example:
 
-    ```javascript
+    ```js
     {
       "article": {
         "article_id": "1",
@@ -209,7 +209,7 @@ Note: GET request can be ran from a browser using "localhost:9090" before an end
     - Description: Returns an on object containing the article with the matching id
     - Response:
 
-    ```javascript
+    ```js
     {
       "article": {
         "article_id": 1,
@@ -229,7 +229,7 @@ Note: GET request can be ran from a browser using "localhost:9090" before an end
     - Description: Returns an object containing the updated article
     - Body Example:
 
-    ```javascript
+    ```js
     {
       "inc_votes": 2
     }
@@ -237,7 +237,7 @@ Note: GET request can be ran from a browser using "localhost:9090" before an end
 
     - Response:
 
-    ```javascript
+    ```js
     "response": {
         "article": {
           "article_id": 1,
@@ -263,7 +263,7 @@ Note: GET request can be ran from a browser using "localhost:9090" before an end
 
     - Response Example:
 
-    ```javascript
+    ```js
     {
       "comments": [
         {
@@ -283,7 +283,7 @@ Note: GET request can be ran from a browser using "localhost:9090" before an end
 
     - Query Rules:
 
-      ```javascript
+      ```js
       {
         "COLUMN": ["comment_id", "body", "votes", "author", "created_At"],
         "ORDER": ["asc", "desc"],
@@ -297,7 +297,7 @@ Note: GET request can be ran from a browser using "localhost:9090" before an end
     - Description: Returns an object with the newly added comment
     - Body Example:
 
-    ```javascript
+    ```js
     {
       "username": "username_here",
       "body": "body_here"
@@ -306,7 +306,7 @@ Note: GET request can be ran from a browser using "localhost:9090" before an end
 
     - Response Example:
 
-    ```javascript
+    ```js
     {
       "comment": {
         "comment_id": 19,
@@ -325,13 +325,13 @@ Note: GET request can be ran from a browser using "localhost:9090" before an end
   - PATCH:
     - Description: Returns an object containing the updated comment
     - Body Example:
-    ```javascript
+    ```js
     {
       "inc_votes": 2
     }
     ```
     - Response Example:
-    ```javascript
+    ```js
     {
       "comment": {
         "comment_id": 2,
@@ -351,7 +351,7 @@ Note: GET request can be ran from a browser using "localhost:9090" before an end
   - GET:
     - Description: Returns an on object containing an array of all articles
     - Response:
-    ```javascript
+    ```js
     {
       "users": [
         {
@@ -365,7 +365,7 @@ Note: GET request can be ran from a browser using "localhost:9090" before an end
   - POST:
     - Description: Returns an object with the newly added user
     - Body Example:
-    ```javascript
+    ```js
     {
       "username": "username_here",
       "avatar_url": "https: //www.longstring.com",
@@ -373,7 +373,7 @@ Note: GET request can be ran from a browser using "localhost:9090" before an end
     }
     ```
     - Response:
-    ```javascript
+    ```js
     {
       "user": {
         "username": "username_here",
@@ -388,7 +388,7 @@ Note: GET request can be ran from a browser using "localhost:9090" before an end
   - GET:
     - Description: Returns an object with the user
     - Response Example:
-    ```javascript
+    ```js
     {
       "user": {
         "username": ":username",
