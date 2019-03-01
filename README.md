@@ -331,7 +331,7 @@ Note: GET request can be ran from a browser using "localhost:9090" before an end
     }
     ```
     - Response Example:
-    ```json
+    ```JSON
     {
       "comment": {
         "comment_id": 2,
@@ -414,3 +414,16 @@ npm test
 - Testing:
   - Mocha
   - Chai
+
+### Version
+
+- 1.0
+
+### Author
+
+Shaquille Hobbs-Daley (shobbsd)
+
+### Acknowledgements
+
+Big thank you to Northcoders for getting me this far.
+Also thank you to my cohort they were often my first port of call when building this application.
