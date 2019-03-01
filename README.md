@@ -69,7 +69,7 @@ Note: GET request can be ran from a browser using "localhost:9090" before an end
     - Description: Returns an on object containing an array of all topics
     - Response example:
 
-    ```js
+    ```json
     {
       "topics": [
         {
