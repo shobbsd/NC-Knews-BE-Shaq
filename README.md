@@ -1,4 +1,4 @@
-# NC News ![Version](https://img.shields.io/badge/Version-1.0-brightgreen.svg) ![release date](https://img.shields.io/github/release-date/shobbsd/BE2-NC-Knews.svg) ![Commit hist](https://img.shields.io/github/commit-activity/y/shobbsd/BE2-NC-Knews.svg)
+# NC News ![Version](https://img.shields.io/badge/Version-1.0-brightgreen.svg) ![release date](https://img.shields.io/badge/Release%20Date-March%202019-blue.svg)
 
 NC News is a web application designed to act as a repository for news articles. The relational database stores the Articles, Comments, Topics, and Users.
 
