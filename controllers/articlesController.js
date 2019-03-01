@@ -54,7 +54,7 @@ exports.getArticleById = (req, res, next) => {
 exports.patchArticle = (req, res, next) => {
   const { article_id } = req.params;
   const votes = req.body.inc_votes;
-  const allowedPatches = ['inc_votes'];
+  // const allowedPatches = ['inc_votes']; intend to do an array of allowed patched to check against
   if (!votes) {
     return fetchArticleById({ article_id })
       .then(([article]) => {
@@ -122,7 +122,12 @@ exports.postCommentByArticleId = (req, res, next) => {
       .then(([comment]) => {
         res.status(201).json({ comment });
       })
-      .catch(next);
+      .catch((err) => {
+        if (err.code === '23503') {
+          return next({ status: 422, msg: 'this article id or usename does not exist' });
+        }
+        return next(err);
+      });
   } else {
     next({ status: 400, msg: 'The article_id must be a number' });
   }

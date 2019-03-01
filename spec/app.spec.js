@@ -341,12 +341,9 @@ describe('/api', () => {
             username: 'junior',
             body: 'I am a body',
           })
-        // .expect(400)
+          .expect(422)
           .then(({ body }) => {
-            console.log(body);
-            expect(body).to.eql({
-              msg: 'Something doesnt exist, either the topic or the username or the article',
-            });
+            expect(body).to.eql({ msg: 'this article id or usename does not exist' });
           }));
         it('POST:400 should inform the user that there are no articles with that id', () => request
           .post('/api/articles/99/comments')
@@ -354,10 +351,10 @@ describe('/api', () => {
             username: 'junior',
             body: 'I am a body',
           })
-          .expect(404)
+          .expect(422)
           .then(({ body }) => {
             expect(body).to.eql({
-              msg: 'Something doesnt exist, either the topic or the username or the article',
+              msg: 'this article id or usename does not exist',
             });
           }));
       });
@@ -374,16 +371,14 @@ describe('/api', () => {
         expect(body.comment.votes).to.equal(17);
         expect(body.comment.comment_id).to.equal(2);
       }));
-    it('PATCH: 400, should return a message explaining that there is something wrong with the body', () => request
+    it('PATCH: 200, should return the selected comment with no changes made', () => request
       .patch('/api/comments/2')
       .send({
         // inc_votes: 3,
       })
-      .expect(400)
+      .expect(200)
       .then(({ body }) => {
-        expect(body).to.eql({
-          msg: 'Either there are no votes, or the change in votes is not a number',
-        });
+        expect(body.response.votes).to.equal(14);
       }));
     it('PATCH: 400, should return a message explaining that there is something wrong with the body', () => request
       .patch('/api/comments/2')
