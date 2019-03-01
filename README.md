@@ -1,4 +1,4 @@
-# NC News
+# NC News ![Version](https://img.shields.io/badge/Version-1.0-brightgreen.svg) ![release date](https://img.shields.io/github/release-date/shobbsd/BE2-NC-Knews.svg) ![Commit hist](https://img.shields.io/github/commit-activity/y/shobbsd/BE2-NC-Knews.svg)
 
 NC News is a web application designed to act as a repository for news articles. The relational database stores the Articles, Comments, Topics, and Users.
 
@@ -203,7 +203,7 @@ Note: GET request can be ran from a browser using "localhost:9090" before an end
 
 - /api/articles/:article_id:
 
-  - Note: :article_id must be an integer
+  - **Note: :article_id must be an integer**
   - GET:
 
     - Description: Returns an on object containing the article with the matching id
@@ -257,7 +257,7 @@ Note: GET request can be ran from a browser using "localhost:9090" before an end
 
 - /api/articles/:article_id/comments
 
-  - Note: :article_id must be an integer
+  - **Note: :article_id must be an integer**
   - GET:
     Description: Returns an on object an array of comments related to the article
 
@@ -321,7 +321,7 @@ Note: GET request can be ran from a browser using "localhost:9090" before an end
 
 - /api/comments/:comment_id:
 
-  - Note: comment_id must be an integer
+  - **Note: comment_id must be an integer**
   - PATCH:
     - Description: Returns an object containing the updated comment
     - Body Example:
