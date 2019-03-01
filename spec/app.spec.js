@@ -10,7 +10,7 @@ const request = supertest(app);
 
 request.get('/api/topics');
 
-describe.only('/api', () => {
+describe('/api', () => {
   beforeEach(() => connection.seed.run());
   after(() => connection.destroy());
   it('/bad-url', () => request
@@ -431,7 +431,6 @@ describe.only('/api', () => {
         .get('/api/users/rogersop')
         .expect(200)
         .then(({ body }) => {
-          console.log(body);
           expect(body.user.username).to.equal('rogersop');
         }));
       it('GET:404, should return the corresponding user', () => request
