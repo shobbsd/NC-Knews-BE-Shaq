@@ -137,7 +137,7 @@ describe('/api', () => {
       .then(({ body }) => {
         expect(body).to.eql({ msg: 'That is not an accepted order, use "asc" or "desc"' });
       }));
-    it.only('GET:400, should return an error, explaining the author is incorrect', () => request
+    it('GET:400, should return an error, explaining the author is incorrect', () => request
       .get('/api/articles?author=dmkl')
       .expect(404)
       .then(({ body }) => {
