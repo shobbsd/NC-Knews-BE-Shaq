@@ -78,7 +78,7 @@
         ],
         "ORDER": ["asc", "desc"],
         "LIMIT": "Limit the number of results being displayed, defaults to 10",
-        "PAGE": "Choose which page to start displaying result from, calculated pased on the limit"
+        "PAGE": "Choose which page to start displaying result from, calculated based on the limit"
       }
     },
     "POST": {
@@ -164,7 +164,7 @@
         "COLUMN": ["comment_id", "body", "votes", "author", "created_At"],
         "ORDER": ["asc", "desc"],
         "LIMIT": "Limit the number of results being displayed, defaults to 10",
-        "PAGE": "Choose which page to start displaying result from, calculated pased on the limit"
+        "PAGE": "Choose which page to start displaying result from, calculated based on the limit"
       }
     },
     "POST": {
@@ -187,6 +187,7 @@
   },
 
   "/api/comments/:comment_id": {
+    ":comment_id": "Must be an integer",
     "PATCH": {
       "description": "Returns an object containing the updated comment",
       "bodyExample": {

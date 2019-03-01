@@ -14,7 +14,8 @@
     "migrate:rollback": "knex migrate:rollback",
     "seed:make": "knex seed:make",
     "seed:run": "knex seed:run",
-    "dev": "nodemon listen.js"
+    "dev": "nodemon listen.js",
+    "host": "node listen.js"
   },
   "repository": {
     "type": "git",

@@ -11,7 +11,7 @@ exports.queryCreator = (req, res, next) => {
   if (req.query.author) query['articles.author'] = req.query.author;
   if (req.query.topic) query.topic = req.query.topic;
   if (req.query.order) {
-    if (req.query.order === 'asc' || req.query.order === 'asc') {
+    if (req.query.order === 'asc' || req.query.order === 'desc') {
       sort = req.query.order;
     } else {
       next({ status: 400, msg: 'That is not an accepted order, use "asc" or "desc"' });

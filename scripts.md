@@ -4,3 +4,4 @@
 4. "migrate:rollback" - runs all `down` fns in the migration files - thereby dropping all data
 5. "seed:make" - Creates a seed file.
 6. "seed:run" - (rollback -> latest) inserts data
+7. "dev" - hosts the server, default port = 9090
