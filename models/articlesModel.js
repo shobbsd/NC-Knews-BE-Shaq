@@ -32,7 +32,7 @@ exports.fetchArticleById = ({ article_id }) => connection('articles')
 
 exports.updateArticle = ({ article_id, votes }) => connection('articles')
   .where({ article_id })
-  .increment('votes', votes)
+  .increment('votes', votes) // votes
   .returning('*');
 
 exports.removeArticle = ({ article_id }) => connection('articles')

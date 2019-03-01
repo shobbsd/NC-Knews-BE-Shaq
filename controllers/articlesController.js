@@ -54,17 +54,30 @@ exports.getArticleById = (req, res, next) => {
 exports.patchArticle = (req, res, next) => {
   const { article_id } = req.params;
   const votes = req.body.inc_votes;
+  const allowedPatches = ['inc_votes'];
+  if (!votes) {
+    return fetchArticleById({ article_id })
+      .then(([article]) => {
+        if (article === undefined) {
+          next({ status: 404, msg: `The article_id (${article_id}) does not exist` });
+        } else res.status(200).json({ article });
+      })
+      .catch(next);
+  }
   if (typeof votes !== 'number') {
-    next({ status: 400, msg: 'Either there are no votes, or the change in votes is not a number' });
-  } else if (Object.keys(req.body).includes('inc_votes') && Object.keys(req.body).length < 2) {
-    updateArticle({ article_id, votes })
+    return next({
+      status: 400,
+      msg: 'Either there are no votes, or the change in votes is not a number',
+    });
+  }
+  if (Object.keys(req.body).includes('inc_votes') && Object.keys(req.body).length < 2) {
+    return updateArticle({ article_id, votes })
       .then(([article]) => {
         res.status(200).json({ article });
       })
       .catch(next);
-  } else {
-    next({ status: 400, msg: 'There are too many items in the body' });
   }
+  return next({ status: 400, msg: 'There are too many items in the body' });
 };
 
 exports.deleteArticle = (req, res, next) => {

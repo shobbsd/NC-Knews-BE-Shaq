@@ -15,7 +15,7 @@ exports.handle400 = (err, req, res, next) => {
     res.status(400).json({ msg: 'There is data missing in the body for this post' });
   } else if (err.code === '23503') {
     res
-      .status(400)
+      .status(404)
       .json({ msg: 'Something doesnt exist, either the topic or the username or the article' });
   } else next(err);
 };

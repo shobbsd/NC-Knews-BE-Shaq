@@ -147,7 +147,7 @@ describe('/api', () => {
       .get('/api/articles?topic=dmkl')
       .expect(404)
       .then(({ body }) => {
-        expect(body).to.eql({ msg: '"dmkl" does not exist as a topic' });
+        expect(body).to.eql({ msg: 'dmkl does not exist as a topic' });
       }));
     it('GET:200, should return an empty array if the topic exists but contains no articles', () => {
       request
@@ -185,7 +185,7 @@ describe('/api', () => {
       .then(({ body }) => {
         expect(body).to.eql({ msg: 'There is data missing in the body for this post' });
       }));
-    it('POST:400, error should explain that there are no authors/topics by that name', () => request
+    it('POST:404, error should explain that there are no authors/topics by that name', () => request
       .post('/api/articles')
       .send({
         title: 'this is a title',
@@ -193,7 +193,7 @@ describe('/api', () => {
         topic: 'mitc',
         username: 'rogersop',
       })
-      .expect(400)
+      .expect(404)
       .then(({ body }) => {
         expect(body).to.eql({
           msg: 'Something doesnt exist, either the topic or the username or the article',
@@ -225,13 +225,22 @@ describe('/api', () => {
         .then(({ body }) => {
           expect(body.article.votes).to.equal(102);
         }));
-      it('PATCH:400 should inform the user that info is missing from the body', () => request
+      it('PATCH:400 should return the article unchanged', () => request
         .patch('/api/articles/1')
         .send({})
-        .expect(400)
+        .expect(200)
         .then(({ body }) => {
           expect(body).to.eql({
-            msg: 'Either there are no votes, or the change in votes is not a number',
+            article: {
+              article_id: 1,
+              title: 'Living in the shadow of a great man',
+              body: 'I find this existence challenging',
+              votes: 100,
+              topic: 'mitch',
+              author: 'butter_bridge',
+              created_at: '2018-11-15T12:21:54.000Z',
+              comment_count: '13',
+            },
           });
         }));
       it('PATCH:400 should inform the user that info is missing from the body', () => request
@@ -332,8 +341,9 @@ describe('/api', () => {
             username: 'junior',
             body: 'I am a body',
           })
-          .expect(400)
+        // .expect(400)
           .then(({ body }) => {
+            console.log(body);
             expect(body).to.eql({
               msg: 'Something doesnt exist, either the topic or the username or the article',
             });
@@ -344,7 +354,7 @@ describe('/api', () => {
             username: 'junior',
             body: 'I am a body',
           })
-          .expect(400)
+          .expect(404)
           .then(({ body }) => {
             expect(body).to.eql({
               msg: 'Something doesnt exist, either the topic or the username or the article',
