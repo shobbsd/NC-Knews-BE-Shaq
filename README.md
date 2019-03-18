@@ -2,6 +2,8 @@
 
 NC News is a web application designed to act as a repository for news articles. The relational database stores the Articles, Comments, Topics, and Users.
 
+Hosted: https://nc-news-shaq.herokuapp.com/
+
 ## Getting Started
 
 ### Prerequisites
