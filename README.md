@@ -349,7 +349,7 @@ Note: GET request can be ran from a browser using "localhost:9090" before an end
 - /api/users:
 
   - GET:
-    - Description: Returns an on object containing an array of all articles
+    - Description: Returns an on object containing an array of all users
     - Response:
     ```js
     {
