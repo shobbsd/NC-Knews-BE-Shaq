@@ -26,7 +26,7 @@ exports.addArticle = insert => connection('articles')
 exports.fetchArticleById = ({ article_id }) => connection('articles')
   .select('articles.*')
   .count('comment_id AS comment_count')
-  .innerJoin('comments', 'articles.article_id', 'comments.article_id')
+  .leftJoin('comments', 'articles.article_id', 'comments.article_id')
   .groupBy('articles.article_id')
   .where({ 'articles.article_id': article_id });
 
