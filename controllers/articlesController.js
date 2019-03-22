@@ -115,6 +115,8 @@ exports.getCommentsByArticleId = (req, res, next) => {
 };
 
 exports.postCommentByArticleId = (req, res, next) => {
+  console.log(req.body);
+  console.log(req.params);
   const { article_id } = req.params;
   const { username: author, body } = req.body;
   if (!Number.isNaN(+article_id)) {
