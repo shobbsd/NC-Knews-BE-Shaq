@@ -18,13 +18,13 @@ Hosted: https://nc-news-shaq.herokuapp.com/
 1. Clone this repository
 
 ```bash
-git clone https://github.com/shobbsd/BE2-NC-Knews.git
+git clone https://github.com/shobbsd/NC-Knews-BE-Shaq.git
 ```
 
 2. `cd` into the repository
 
 ```bash
-cd BE2-NC-Knews
+cd NC-Knews-BE-Shaq
 ```
 
 3. Install the dependencies
